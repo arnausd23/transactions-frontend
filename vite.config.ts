@@ -30,6 +30,8 @@ export default defineConfig({
       styles: path.resolve(__dirname, './src/styles'),
       utils: path.resolve(__dirname, './src/utils'),
       views: path.resolve(__dirname, './src/views'),
+      application: path.resolve(__dirname, './src/application'),
+      infrastructure: path.resolve(__dirname, './src/infrastructure'),
     },
   },
 });

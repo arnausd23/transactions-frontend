@@ -4,9 +4,25 @@
  */
 const DEFAULT_URL = '/api/transactions';
 
-export const fetchAPI = async (url: string = DEFAULT_URL) => {
+type FetchAPIOptions = {
+  url?: string;
+  method?: 'GET' | 'POST';
+  body?: Record<string, any>;
+};
+
+export const fetchAPI = async (options: FetchAPIOptions = {}) => {
   try {
-    const response = await fetch(url);
+    const { url = DEFAULT_URL, method = 'GET', body } = options;
+
+    const fetchOptions: RequestInit = {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...(body && { body: JSON.stringify(body) }),
+    };
+
+    const response = await fetch(url, fetchOptions);
 
     if (!response.ok) {
       throw new Error('Failed to fetch transactions');
