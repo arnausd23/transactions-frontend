@@ -6,7 +6,6 @@ import Spinner from 'components/core/Spinner/Spinner';
 
 import styles from './TransactionsTable.module.scss';
 import { useTransactions } from 'application/hooks/useTransactions';
-import { formatDate } from 'utils/date';
 import { sortByDate } from 'utils/sortTransactions';
 
 export const columnStyles = {
@@ -23,17 +22,43 @@ const containerStyles = {
 
 const TransactionsTable: FC = () => {
   const { data, isLoading, isError, error } = useTransactions();
+  const [newTransactionId, setNewTransactionId] = React.useState<string | null>(
+    null,
+  );
+  const previousFirstIdRef = React.useRef<string | null>(null);
 
   // Re execute it only if the data we receive from the API changes
   const processedTransactions = useMemo(() => {
     if (!data) return null;
 
     const sorted = sortByDate(data, 'desc');
-    return sorted.map((transaction) => ({
-      ...transaction,
-      timestamp: formatDate(transaction.timestamp),
-    }));
+    return sorted;
   }, [data]);
+
+  // Track the first transaction ID to detect new additions
+  React.useEffect(() => {
+    if (!processedTransactions || processedTransactions.length === 0) return;
+
+    const firstTransaction = processedTransactions[0];
+    const previousFirstTransactionId = previousFirstIdRef.current;
+
+    previousFirstIdRef.current = firstTransaction.id;
+
+    // Only trigger highlight if we had a previous ID and it changed
+    if (
+      !previousFirstTransactionId ||
+      previousFirstTransactionId === firstTransaction.id
+    )
+      return;
+
+    setNewTransactionId(firstTransaction.id);
+
+    const timeout = setTimeout(() => {
+      setNewTransactionId(null);
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [processedTransactions]);
 
   return (
     <div className={styles.root}>
@@ -69,6 +94,7 @@ const TransactionsTable: FC = () => {
               key={transaction.id}
               columnStyles={columnStyles}
               transactionRecord={transaction}
+              isNewlyAdded={transaction.id === newTransactionId}
             />
           ))}
         </>

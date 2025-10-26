@@ -17,11 +17,25 @@
 
 .form {
   display: flex;
+  flex-direction: column;
+}
+
+.error {
+  @include typoContent;
+  & {
+    color: $color-red;
+    margin: 0 0.5rem 1rem;
+    padding: 0.5rem;
+    background-color: rgba($color-red, 0.1);
+    border-radius: $defaultRadius;
+    border: 0.1rem solid $color-red;
+  }
 }
 
 .fields {
   width: 100%;
   display: flex;
+  margin-bottom: 1rem;
 }
 
 .buttonAdd {

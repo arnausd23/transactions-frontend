@@ -1,4 +1,4 @@
-import { TransactionRecord } from 'store/types';
+import { Transaction } from 'domain/entities/Transaction';
 
 export interface RecordRowProps {
   columnStyles: {
@@ -7,5 +7,6 @@ export interface RecordRowProps {
     payee: string;
     memo: string;
   };
-  transactionRecord: TransactionRecord;
+  transactionRecord: Transaction;
+  isNewlyAdded?: boolean;
 }

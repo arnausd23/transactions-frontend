@@ -4,20 +4,18 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
+import { Transaction, TransactionDTO } from 'domain/entities/Transaction';
 import { fetchAPI } from 'infrastructure/api/fetchAPI';
-import { TransactionRecord } from 'store/types';
-
-type TransactionsResponse = {
-  transactions: TransactionRecord[];
-};
+import { TRANSACTIONS_QUERY_KEY } from './types';
 
 export const useTransactions = () => {
-  return useQuery<TransactionsResponse, Error>({
-    queryKey: ['transactions'],
+  return useQuery<Transaction[], Error>({
+    queryKey: [TRANSACTIONS_QUERY_KEY],
     queryFn: async () => {
       const response = await fetchAPI({ url: '/api/transactions' });
-      return response;
+
+      return response.map((dto: TransactionDTO) => Transaction.fromApi(dto));
     },
-    refetchInterval: 5000, // Refetch every 5 seconds as per requirement
+    refetchInterval: 5000,
   });
 };
