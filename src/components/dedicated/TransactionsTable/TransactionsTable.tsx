@@ -1,13 +1,13 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import cx from 'classnames';
 
 import RecordRow from 'components/dedicated/RecordRow/RecordRow';
 import Spinner from 'components/core/Spinner/Spinner';
+import Pagination from 'components/core/Pagination/Pagination';
 
 import styles from './TransactionsTable.module.scss';
 import spinnerStyles from 'components/core/Spinner/Spinner.module.scss';
-import { useTransactions } from 'application/hooks/useTransactions';
-import { sortByDate } from 'utils/sortTransactions';
+import { usePaginatedTransactions } from 'application/hooks/usePaginatedTransactions';
 
 export const columnStyles = {
   amount: styles['column--amount'],
@@ -25,45 +25,50 @@ const refreshingRowStyles = {
   refreshingRow: styles['refreshing-row'],
 };
 
-const TransactionsTable: FC = () => {
-  const { data, isLoading, isError, error, isFetching } = useTransactions();
-  const [newTransactionId, setNewTransactionId] = React.useState<string | null>(
-    null,
-  );
-  const previousFirstIdRef = React.useRef<string | null>(null);
+interface TransactionsTableProps {
+  onNavigateToTransaction?: (goToTransactionPage: (id: string) => void) => void;
+  newTransactionId?: string | null;
+}
 
-  // Re execute it only if the data we receive from the API changes
-  const processedTransactions = useMemo(() => {
-    if (!data) return null;
+const TransactionsTable: FC<TransactionsTableProps> = ({
+  onNavigateToTransaction,
+  newTransactionId: externalNewTransactionId,
+}) => {
+  const {
+    transactions,
+    pagination,
+    isLoading,
+    isError,
+    error,
+    isFetching,
+    goToNextPage,
+    goToPreviousPage,
+    goToTransactionPage,
+  } = usePaginatedTransactions();
 
-    const sorted = sortByDate(data, 'desc');
-    return sorted;
-  }, [data]);
+  const [highlightedTransactionId, setHighlightedTransactionId] = useState<
+    string | null
+  >(null);
 
-  // Track the first transaction ID to detect new additions
-  React.useEffect(() => {
-    if (!processedTransactions || processedTransactions.length === 0) return;
+  // Expose navigation function to parent
+  useEffect(() => {
+    if (onNavigateToTransaction) {
+      onNavigateToTransaction(goToTransactionPage);
+    }
+  }, [onNavigateToTransaction, goToTransactionPage]);
 
-    const firstTransaction = processedTransactions[0];
-    const previousFirstTransactionId = previousFirstIdRef.current;
+  // Handle highlighting for newly added transactions
+  useEffect(() => {
+    if (externalNewTransactionId) {
+      setHighlightedTransactionId(externalNewTransactionId);
 
-    previousFirstIdRef.current = firstTransaction.id;
+      const timeout = setTimeout(() => {
+        setHighlightedTransactionId(null);
+      }, 1000);
 
-    // Only trigger highlight if we had a previous ID and it changed
-    if (
-      !previousFirstTransactionId ||
-      previousFirstTransactionId === firstTransaction.id
-    )
-      return;
-
-    setNewTransactionId(firstTransaction.id);
-
-    const timeout = setTimeout(() => {
-      setNewTransactionId(null);
-    }, 1000);
-
-    return () => clearTimeout(timeout);
-  }, [processedTransactions]);
+      return () => clearTimeout(timeout);
+    }
+  }, [externalNewTransactionId]);
 
   return (
     <div className={styles.root}>
@@ -82,6 +87,14 @@ const TransactionsTable: FC = () => {
         </div>
       )}
 
+      {/* Show refresh indicator as a loading row when fetching but not initial load */}
+      {isFetching && !isLoading && (
+        <div className={refreshingRowStyles.refreshingRow}>
+          <Spinner size={3} className={spinnerStyles['spinner--cyan']} />
+          <p>Refreshing transactions...</p>
+        </div>
+      )}
+
       {/* Error state */}
       {isError && (
         <div className={cx(styles.container, containerStyles.error)}>
@@ -92,30 +105,34 @@ const TransactionsTable: FC = () => {
       )}
 
       {/* Success state - render transactions */}
-      {processedTransactions && processedTransactions.length > 0 && (
+      {transactions && transactions.length > 0 && (
         <>
-          {/* Show refresh indicator as a loading row when fetching but not initial load */}
-          {isFetching && !isLoading && (
-            <div className={refreshingRowStyles.refreshingRow}>
-              <Spinner size={3} className={spinnerStyles['spinner--cyan']} />
-            </div>
-          )}
-          {processedTransactions.map((transaction) => (
+          {transactions.map((transaction) => (
             <RecordRow
               key={transaction.id}
               columnStyles={columnStyles}
               transactionRecord={transaction}
-              isNewlyAdded={transaction.id === newTransactionId}
+              isNewlyAdded={transaction.id === highlightedTransactionId}
             />
           ))}
         </>
       )}
 
       {/* Empty state */}
-      {processedTransactions && processedTransactions.length === 0 && (
+      {transactions && transactions.length === 0 && (
         <div className={cx(styles.container, containerStyles.empty)}>
           <p>No transactions found.</p>
         </div>
+      )}
+
+      {/* Pagination controls */}
+      {pagination && transactions && transactions.length > 0 && (
+        <Pagination
+          pagination={pagination}
+          onNextPage={goToNextPage}
+          onPreviousPage={goToPreviousPage}
+          onGoToPage={() => {}}
+        />
       )}
     </div>
   );

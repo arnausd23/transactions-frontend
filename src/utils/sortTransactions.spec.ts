@@ -1,29 +1,29 @@
+import { Transaction } from 'domain/entities/Transaction';
 import { sortByDate } from './sortTransactions';
-import { TransactionRecord } from 'store/types';
 
 describe('sortTransactions', () => {
-  const mockTransactions: TransactionRecord[] = [
-    {
+  const mockTransactions: Transaction[] = [
+    Transaction.fromApi({
       id: '1',
       amount: 100,
       payee: 'Test Payee 1',
       memo: 'Test memo 1',
       timestamp: 1609459200000, // 2021-01-01 00:00:00
-    },
-    {
+    }),
+    Transaction.fromApi({
       id: '2',
       amount: 200,
       payee: 'Test Payee 2',
       memo: 'Test memo 2',
       timestamp: 1640995200000, // 2022-01-01 00:00:00
-    },
-    {
+    }),
+    Transaction.fromApi({
       id: '3',
       amount: 300,
       payee: 'Test Payee 3',
       memo: 'Test memo 3',
       timestamp: 1672531200000, // 2023-01-01 00:00:00
-    },
+    }),
   ];
 
   describe('sortByDate', () => {

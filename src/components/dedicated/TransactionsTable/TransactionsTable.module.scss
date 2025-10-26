@@ -6,17 +6,16 @@
 }
 
 .refreshing-row {
+  position: absolute;
+  top: 10rem;
+  right: 0;
+  width: 300px;
+
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 1.5rem 1rem;
-  background: linear-gradient(
-    90deg,
-    rgba($color-cyan-lightest, 0.3),
-    rgba($color-cyan-lightest, 0.6),
-    rgba($color-cyan-lightest, 0.3)
-  );
-  background-size: 200% 100%;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  background: rgba($color-cyan-light, 0.5);
   animation: shimmer 2s ease-in-out infinite;
   border-bottom: 0.1rem solid rgba($color-cyan-light, 0.3);
   min-height: 5rem;

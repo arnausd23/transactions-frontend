@@ -1,5 +1,4 @@
-import { TransactionRecord } from 'store/types';
-
+import { Transaction } from 'domain/entities/Transaction';
 /**
  * Sorts transactions by date
  * @param transactions - Array of transaction records
@@ -7,9 +6,9 @@ import { TransactionRecord } from 'store/types';
  * @returns Sorted array of transactions
  */
 export const sortByDate = (
-  transactions: TransactionRecord[],
+  transactions: Transaction[],
   order: 'asc' | 'desc' = 'desc',
-): TransactionRecord[] => {
+): Transaction[] => {
   return [...transactions].sort((a, b) => {
     return order === 'desc'
       ? b.timestamp - a.timestamp

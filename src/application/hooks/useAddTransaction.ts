@@ -11,22 +11,43 @@ import {
 import { Transaction } from 'domain/entities/Transaction';
 import { TRANSACTIONS_QUERY_KEY } from './types';
 
+export interface UseAddTransactionResult {
+  mutate: (input: AddTransactionInput) => void;
+  mutateAsync: (input: AddTransactionInput) => Promise<Transaction>;
+  isLoading: boolean;
+  isError: boolean;
+  error: Error | null;
+  data: Transaction | undefined;
+  reset: () => void;
+}
+
 /**
  * Hook for adding a new transaction
  *
  * Provides mutation function and state for adding transactions.
  * Automatically invalidates and refetches the transactions list on success.
+ * Returns the newly created transaction with its ID.
  *
- * @returns Mutation object with mutate, mutateAsync, isLoading, isError, etc.
+ * @returns Mutation object with mutate, mutateAsync, isLoading, isError, data (containing new transaction), etc.
  *
  */
-export const useAddTransaction = () => {
+export const useAddTransaction = (): UseAddTransactionResult => {
   const queryClient = useQueryClient();
 
-  return useMutation<Transaction, Error, AddTransactionInput>({
+  const mutation = useMutation<Transaction, Error, AddTransactionInput>({
     mutationFn: addTransaction,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [TRANSACTIONS_QUERY_KEY] });
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: [TRANSACTIONS_QUERY_KEY] });
     },
   });
+
+  return {
+    mutate: mutation.mutate,
+    mutateAsync: mutation.mutateAsync,
+    isLoading: mutation.isPending,
+    isError: mutation.isError,
+    error: mutation.error,
+    data: mutation.data,
+    reset: mutation.reset,
+  };
 };

@@ -7,14 +7,18 @@ import { useAddTransaction } from 'application/hooks/useAddTransaction';
 
 import styles from './AddRecordForm.module.scss';
 
-const AddRecordForm: FC = () => {
+interface AddRecordFormProps {
+  onTransactionAdded?: (transactionId: string) => void;
+}
+
+const AddRecordForm: FC<AddRecordFormProps> = ({ onTransactionAdded }) => {
   const [payee, setPayee] = useState('');
   const [amount, setAmount] = useState('');
   const [memo, setMemo] = useState('');
   const [date, setDate] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const { mutate, isPending } = useAddTransaction();
+  const { mutateAsync, isLoading } = useAddTransaction();
 
   const clearForm = () => {
     setPayee('');
@@ -24,27 +28,27 @@ const AddRecordForm: FC = () => {
     setError(null);
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    // Submit transaction - parsing and validation will happen in the use case layer
-    mutate(
-      {
+    try {
+      // Submit transaction and wait for refetch to complete
+      const newTransaction = await mutateAsync({
         payee: payee.trim(),
         amount: amount,
         timestamp: date.trim() || undefined,
         memo: memo.trim() || undefined,
-      },
-      {
-        onSuccess: () => {
-          clearForm();
-        },
-        onError: (err) => {
-          setError(err.message || 'Failed to add transaction');
-        },
-      },
-    );
+      });
+
+      clearForm();
+
+      if (onTransactionAdded) {
+        onTransactionAdded(newTransaction.id);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to add transaction');
+    }
   };
 
   return (
@@ -58,7 +62,7 @@ const AddRecordForm: FC = () => {
               placeholder="YYYY-MM-DD HH:mm (optional)"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              disabled={isPending}
+              disabled={isLoading}
               aria-label="Date in YYYY-MM-DD HH:mm format"
             />
           </div>
@@ -67,7 +71,7 @@ const AddRecordForm: FC = () => {
               placeholder="Payee *"
               value={payee}
               onChange={(e) => setPayee(e.target.value)}
-              disabled={isPending}
+              disabled={isLoading}
               required
               aria-label="Payee"
             />
@@ -77,7 +81,7 @@ const AddRecordForm: FC = () => {
               placeholder="Memo (optional)"
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
-              disabled={isPending}
+              disabled={isLoading}
               aria-label="Memo"
             />
           </div>
@@ -94,7 +98,7 @@ const AddRecordForm: FC = () => {
               step="1"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              disabled={isPending}
+              disabled={isLoading}
               required
               aria-label="Amount"
             />
@@ -102,11 +106,11 @@ const AddRecordForm: FC = () => {
         </div>
         <Button
           className={styles.buttonAdd}
-          label={isPending ? 'Adding...' : 'Add'}
+          label={isLoading ? 'Adding...' : 'Add'}
           padding="small"
           width="auto"
           type="submit"
-          isDisabled={isPending}
+          isDisabled={isLoading}
         />
       </form>
     </div>
