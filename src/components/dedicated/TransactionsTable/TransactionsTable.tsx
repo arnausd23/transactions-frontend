@@ -5,6 +5,7 @@ import RecordRow from 'components/dedicated/RecordRow/RecordRow';
 import Spinner from 'components/core/Spinner/Spinner';
 
 import styles from './TransactionsTable.module.scss';
+import spinnerStyles from 'components/core/Spinner/Spinner.module.scss';
 import { useTransactions } from 'application/hooks/useTransactions';
 import { sortByDate } from 'utils/sortTransactions';
 
@@ -20,8 +21,12 @@ const containerStyles = {
   empty: styles['container--empty'],
 };
 
+const refreshingRowStyles = {
+  refreshingRow: styles['refreshing-row'],
+};
+
 const TransactionsTable: FC = () => {
-  const { data, isLoading, isError, error } = useTransactions();
+  const { data, isLoading, isError, error, isFetching } = useTransactions();
   const [newTransactionId, setNewTransactionId] = React.useState<string | null>(
     null,
   );
@@ -89,6 +94,12 @@ const TransactionsTable: FC = () => {
       {/* Success state - render transactions */}
       {processedTransactions && processedTransactions.length > 0 && (
         <>
+          {/* Show refresh indicator as a loading row when fetching but not initial load */}
+          {isFetching && !isLoading && (
+            <div className={refreshingRowStyles.refreshingRow}>
+              <Spinner size={3} className={spinnerStyles['spinner--cyan']} />
+            </div>
+          )}
           {processedTransactions.map((transaction) => (
             <RecordRow
               key={transaction.id}

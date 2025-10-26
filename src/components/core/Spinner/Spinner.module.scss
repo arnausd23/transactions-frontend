@@ -7,6 +7,11 @@
   border-color: $color-gray-lighter;
   border-left-color: transparent !important; // !important added because of different colors of Spinner and its border
   animation: spinner 3s infinite linear;
+
+  &--cyan {
+    border-color: $color-cyan;
+    border-left-color: transparent !important;
+  }
 }
 
 @keyframes spinner {

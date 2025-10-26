@@ -2,6 +2,33 @@
   @include typoTableHeader;
   display: flex;
   border-bottom: 0.1rem solid $color-cyan;
+  position: relative;
+}
+
+.refreshing-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+  background: linear-gradient(
+    90deg,
+    rgba($color-cyan-lightest, 0.3),
+    rgba($color-cyan-lightest, 0.6),
+    rgba($color-cyan-lightest, 0.3)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+  border-bottom: 0.1rem solid rgba($color-cyan-light, 0.3);
+  min-height: 5rem;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .column {
