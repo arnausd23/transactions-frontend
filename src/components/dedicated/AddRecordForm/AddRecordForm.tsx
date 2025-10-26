@@ -103,15 +103,17 @@ const AddRecordForm: FC<AddRecordFormProps> = ({ onTransactionAdded }) => {
               aria-label="Amount"
             />
           </div>
+          <div className={styles.column}>
+            <Button
+              className={styles.buttonAdd}
+              label={isLoading ? 'Adding...' : 'Add'}
+              padding="small"
+              width="auto"
+              type="submit"
+              isDisabled={isLoading}
+            />
+          </div>
         </div>
-        <Button
-          className={styles.buttonAdd}
-          label={isLoading ? 'Adding...' : 'Add'}
-          padding="small"
-          width="auto"
-          type="submit"
-          isDisabled={isLoading}
-        />
       </form>
     </div>
   );

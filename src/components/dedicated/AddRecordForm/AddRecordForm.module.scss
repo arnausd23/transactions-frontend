@@ -34,13 +34,22 @@
 
 .fields {
   width: 100%;
-  display: flex;
-  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+
+  @media #{$screen-small-up} {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+  }
 }
 
 .buttonAdd {
-  flex: 6rem 0 0;
-  margin: 0 0.5rem;
+  width: 100%;
+
+  @media #{$screen-small-up} {
+    width: 100%;
+  }
 }
 
 .column {
@@ -63,14 +72,6 @@
 
     &.hasError {
       border-color: $color-red;
-    }
-  }
-}
-
-.column-- {
-  &amount {
-    input {
-      text-align: right;
     }
   }
 }
