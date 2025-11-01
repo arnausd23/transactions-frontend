@@ -1,110 +1,157 @@
-.tableHeader {
+.transactions-table {
+  background: $color-white;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.05),
+    0 0.2rem 0.8rem rgba(0, 0, 0, 0.08);
+  border: 0.1rem solid $color-gray-lighter;
+}
+
+.transactions-table__header {
   @include typoTableHeader;
   display: flex;
-  border-bottom: 0.1rem solid $color-cyan;
-  position: relative;
+  background-color: #4a90e2;
+  color: white;
+  border-bottom: 0.1rem solid $color-gray-lighter;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  text-transform: uppercase;
+  font-size: 1.5rem;
+  letter-spacing: 0.05em;
 }
 
-.refreshingRow {
-  position: absolute;
+.transactions-table__container--loading {
+  position: fixed;
   top: 10rem;
-  right: 0;
-  width: 300px;
+  right: 2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 3rem;
+  background: rgba($color-cyan-lightest, 0.95);
+  border-radius: 1.2rem;
+  box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.15);
+  border: 0.1rem solid $color-cyan-lighter;
+  gap: 1.5rem;
+  z-index: 1000;
+  min-width: 30rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
 
+.transactions-table__container--refreshing {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 1.5rem 2rem;
-  background: rgba($color-cyan-light, 0.5);
-  animation: shimmer 2s ease-in-out infinite;
-  border-bottom: 0.1rem solid rgba($color-cyan-light, 0.3);
-  min-height: 5rem;
+  background: rgba($color-cyan-lightest, 0.9);
+  border-bottom: 0.1rem solid $color-cyan-lighter;
+  gap: 1rem;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
-.refreshingMessage {
+@keyframes pulse {
+  0%,
+  100% {
+    background: rgba($color-cyan-lightest, 0.3);
+  }
+  50% {
+    background: rgba($color-cyan-lightest, 0.6);
+  }
+}
+
+.transactions-table__message--loading {
   margin: 0;
   color: $color-cyan-darker;
-  font-size: 0.875rem;
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-.column {
-  padding: 1rem;
-}
-
-.column-- {
-  &amount {
-    flex: 0 0 25%;
-    text-align: right;
-  }
-
-  &payee {
-    flex: 0 0 30%;
-  }
-
-  &memo {
-    flex: 0 0 30%;
-  }
-
-  &date {
-    flex: 0 0 15%;
-  }
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 1rem;
-  text-align: center;
-}
-
-.loadingMessage {
-  margin: 1rem 0 0;
-  color: $color-black;
-  font-size: 1rem;
-}
-
-.errorContainer {
-  padding: 2rem 1rem;
-  width: 100%;
-}
-
-.emptyContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 1rem;
-  text-align: center;
-}
-
-.emptyIcon {
-  width: 64px;
-  height: 64px;
-  color: $color-gray;
-  margin-bottom: 1rem;
-  opacity: 0.6;
-}
-
-.emptyMessage {
-  margin: 0 0 0.5rem;
-  color: $color-black;
-  font-size: 1.125rem;
+  font-size: 1.4rem;
   font-weight: 500;
 }
 
-.emptySubmessage {
+.transactions-table__message--refreshing {
+  margin: 0;
+  color: $color-cyan-darker;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.transactions-table__column {
+  padding: 1.4rem 1.6rem;
+  display: flex;
+  align-items: center;
+  border-right: 0.1rem solid $color-gray-lighter;
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.transactions-table__column-header {
+  gap: 0.6rem;
+  font-weight: 700;
+}
+
+.transactions-table__sort-icon {
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.transactions-table__column--amount {
+  flex: 0 0 25%;
+  text-align: right;
+}
+
+.transactions-table__column--payee {
+  flex: 0 0 30%;
+}
+
+.transactions-table__column--memo {
+  flex: 0 0 30%;
+}
+
+.transactions-table__column--date {
+  flex: 0 0 15%;
+}
+
+.transactions-table__container--error {
+  padding: 3rem 2rem;
+  width: 100%;
+  background: $color-white;
+  border-bottom: 0.1rem solid $color-gray-lighter;
+}
+
+.transactions-table__container--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 2rem;
+  text-align: center;
+  background: $color-white;
+  border-bottom: 0.1rem solid $color-gray-lighter;
+}
+
+.transactions-table__icon--empty {
+  width: 6.4rem;
+  height: 6.4rem;
+  color: $color-gray-light;
+  margin-bottom: 1.5rem;
+  opacity: 0.5;
+}
+
+.transactions-table__message--empty {
+  margin: 0 0 0.8rem;
+  color: $color-gray-darker;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.transactions-table__submessage--empty {
   margin: 0;
   color: $color-gray;
-  font-size: 0.9375rem;
+  font-size: 1.4rem;
+}
+
+.transactions-table__body {
+  background: $color-white;
 }

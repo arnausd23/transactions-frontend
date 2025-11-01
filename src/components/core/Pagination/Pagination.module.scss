@@ -1,43 +1,191 @@
 @import 'styles/index';
 
-.root {
+// Block: pagination
+.pagination {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1.5rem 0;
-  margin-top: 1rem;
-  border-top: 0.1rem solid $color-gray-light;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2rem 2rem;
+  background: $color-white;
+  border-top: 0.1rem solid $color-gray-lighter;
+  border-radius: 0 0 0.8rem 0.8rem;
+
+  @media #{$phone-only} {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  // Element: info section
+  &__info {
+    display: flex;
+    align-items: center;
+  }
+
+  // Element: results text
+  &__results-text {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: $color-gray-darkest;
+  }
+
+  // Element: controls section
+  &__controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  // Element: page button
+  &__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 4.2rem;
+    height: 4.2rem;
+    padding: 0.8rem 1.2rem;
+    border: 0.2rem solid $color-gray-lighter;
+    border-radius: 1rem;
+    background: $color-white;
+    color: $color-gray-darker;
+    font-size: 1.6rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: $color-gray-lightest;
+      border-color: $color-gray-light;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    // Modifier: active page
+    &--active {
+      background: #4a90e2;
+      color: $color-white;
+      border-color: #4a90e2;
+
+      &:hover {
+        background: #3a7bc8;
+        border-color: #3a7bc8;
+      }
+    }
+
+    // Modifier: arrow button
+    &--arrow {
+      min-width: 4.2rem;
+      padding: 0.8rem;
+
+      svg {
+        display: block;
+      }
+    }
+  }
+
+  // Element: ellipsis
+  &__ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 4.2rem;
+    height: 4.2rem;
+    color: $color-gray;
+    font-size: 1.6rem;
+    font-weight: 600;
+    user-select: none;
+  }
+
+  // Element: per-page control
+  &__per-page {
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  // Element: per-page select
+  &__select {
+    appearance: none;
+    min-width: 8rem;
+    height: 4.2rem;
+    padding: 0.8rem 3.5rem 0.8rem 1.5rem;
+    border: 0.2rem solid $color-gray-lighter;
+    border-radius: 1rem;
+    background: $color-gray-lightest;
+    color: $color-gray-darker;
+    font-size: 1.6rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $color-gray-light;
+      background: $color-gray-lighter;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #4a90e2;
+      background: $color-white;
+    }
+  }
+
+  // Element: dropdown icon
+  &__dropdown-icon {
+    position: absolute;
+    right: 1.5rem;
+    pointer-events: none;
+    color: $color-gray-dark;
+  }
+}
+
+// Backwards compatibility aliases
+.root {
+  @extend .pagination;
 }
 
 .info {
-  font-size: 1.4rem;
-  color: $color-gray-dark;
-  text-align: center;
+  @extend .pagination__info;
+}
+
+.resultsText {
+  @extend .pagination__results-text;
 }
 
 .controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  @extend .pagination__controls;
 }
 
-.pageInfo {
-  font-size: 1.4rem;
-  font-weight: 500;
-  color: $color-gray-darkest;
-  min-width: 10rem;
-  text-align: center;
+.pageButton {
+  @extend .pagination__button;
 }
 
-@media #{$screen-small-up} {
-  .root {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
+.active {
+  @extend .pagination__button--active;
+}
 
-  .info {
-    text-align: left;
-  }
+.arrowButton {
+  @extend .pagination__button--arrow;
+}
+
+.ellipsis {
+  @extend .pagination__ellipsis;
+}
+
+.perPageControl {
+  @extend .pagination__per-page;
+}
+
+.perPageSelect {
+  @extend .pagination__select;
+}
+
+.dropdownIcon {
+  @extend .pagination__dropdown-icon;
 }

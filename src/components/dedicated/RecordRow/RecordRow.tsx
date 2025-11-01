@@ -16,6 +16,8 @@ const RecordRow: FC<RecordRowProps> = ({
   transactionRecord,
   isNewlyAdded = false,
 }) => {
+  const isNegative = transactionRecord.amount < 0;
+
   return (
     <div
       className={cx(styles.root, {
@@ -35,7 +37,7 @@ const RecordRow: FC<RecordRowProps> = ({
         <Currency
           amount={transactionRecord.amount}
           className={cx(styles.currency, {
-            [currencyStyles.negative]: transactionRecord.amount < 0,
+            [currencyStyles.negative]: isNegative,
           })}
         />
       </div>
