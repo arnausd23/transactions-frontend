@@ -1,10 +1,12 @@
 import React, { FC, useState, FormEvent, useCallback } from 'react';
 import cx from 'classnames';
 
-import { columnStyles } from 'components/dedicated/TransactionsTable/TransactionsTable';
 import Button from 'components/core/Button/Button';
 import ErrorMessage from 'components/core/ErrorMessage/ErrorMessage';
-import { useAddTransaction, AddTransactionInput } from 'hooks/useAddTransaction';
+import {
+  useAddTransaction,
+  AddTransactionInput,
+} from 'hooks/useAddTransaction';
 
 import styles from './AddRecordForm.module.scss';
 
@@ -29,10 +31,7 @@ const AddRecordForm: FC<AddRecordFormProps> = ({ onTransactionAdded }) => {
 
   const { mutateAsync, isLoading } = useAddTransaction();
 
-  const validateField = (
-    name: string,
-    value: string,
-  ): string | undefined => {
+  const validateField = (name: string, value: string): string | undefined => {
     switch (name) {
       case 'payee':
         if (!value || value.trim().length === 0) {
@@ -55,17 +54,17 @@ const AddRecordForm: FC<AddRecordFormProps> = ({ onTransactionAdded }) => {
         }
         return undefined;
       case 'date':
-        if (value && value.trim().length > 0) {
-          // Validate date format: YYYY-MM-DD HH:mm or YYYY-MM-DD
-          const dateRegex =
-            /^\d{4}-\d{2}-\d{2}(\s+\d{1,2}:\d{2})?$/;
-          if (!dateRegex.test(value.trim())) {
-            return 'Please use format: YYYY-MM-DD or YYYY-MM-DD HH:mm';
-          }
-          const parsedDate = new Date(value.trim());
-          if (isNaN(parsedDate.getTime())) {
-            return 'Invalid date. Please check the format.';
-          }
+        if (!value || value.trim().length === 0) {
+          return 'Date is required';
+        }
+        // Validate date format: YYYY-MM-DD HH:mm or YYYY-MM-DD
+        const dateRegex = /^\d{4}-\d{2}-\d{2}(\s+\d{1,2}:\d{2})?$/;
+        if (!dateRegex.test(value.trim())) {
+          return 'Please use format: YYYY-MM-DD or YYYY-MM-DD HH:mm';
+        }
+        const parsedDate = new Date(value.trim());
+        if (isNaN(parsedDate.getTime())) {
+          return 'Invalid date. Please check the format.';
         }
         return undefined;
       default:
@@ -117,7 +116,7 @@ const AddRecordForm: FC<AddRecordFormProps> = ({ onTransactionAdded }) => {
       const input: AddTransactionInput = {
         payee: payee.trim(),
         amount: amount.trim(),
-        timestamp: date.trim() || new Date().toISOString().slice(0, 16),
+        timestamp: date.trim(),
         memo: memo.trim() || undefined,
       };
 
@@ -142,14 +141,21 @@ const AddRecordForm: FC<AddRecordFormProps> = ({ onTransactionAdded }) => {
   };
 
   return (
-    <div className={styles.root}>
-      <div className={styles.header}>Add record</div>
-      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+    <div className={styles['add-record-form']}>
+      <div className={styles['add-record-form__header']}>Add record</div>
+      <form
+        className={styles['add-record-form__form']}
+        onSubmit={handleSubmit}
+        noValidate
+      >
         {/* Success message */}
         {successMessage && (
-          <div className={styles.success} role="alert">
+          <div
+            className={styles['add-record-form__message--success']}
+            role="alert"
+          >
             <svg
-              className={styles.successIcon}
+              className={styles['add-record-form__icon--success']}
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -169,43 +175,28 @@ const AddRecordForm: FC<AddRecordFormProps> = ({ onTransactionAdded }) => {
 
         {/* Submit error */}
         {submitError && (
-          <div className={styles.submitError}>
+          <div className={styles['add-record-form__error-container']}>
             <ErrorMessage error={submitError} />
           </div>
         )}
 
-        <div className={styles.fields}>
-          <div className={cx(styles.column, columnStyles.date)}>
-            <input
-              placeholder="YYYY-MM-DD HH:mm (optional)"
-              value={date}
-              onChange={(e) => {
-                setDate(e.target.value);
-                if (fieldErrors.date) {
-                  handleFieldBlur('date', e.target.value);
-                }
-              }}
-              onBlur={(e) => handleFieldBlur('date', e.target.value)}
-              disabled={isLoading}
-              aria-label="Date in YYYY-MM-DD HH:mm format"
-              aria-invalid={!!fieldErrors.date}
-              aria-describedby={fieldErrors.date ? 'date-error' : undefined}
-              className={cx({ [styles.inputError]: fieldErrors.date })}
-            />
-            {fieldErrors.date && (
+        <div className={styles['add-record-form__fields']}>
+          {/* First Row */}
+          <div className={styles['add-record-form__field-group']}>
+            <label
+              htmlFor="payee-input"
+              className={styles['add-record-form__label']}
+            >
+              Payee
               <span
-                id="date-error"
-                className={styles.fieldError}
-                role="alert"
+                className={styles['add-record-form__label-indicator--required']}
               >
-                {fieldErrors.date}
+                *
               </span>
-            )}
-          </div>
-
-          <div className={cx(styles.column, columnStyles.payee)}>
+            </label>
             <input
-              placeholder="Payee *"
+              id="payee-input"
+              placeholder="Enter payee name"
               value={payee}
               onChange={(e) => {
                 setPayee(e.target.value);
@@ -216,15 +207,16 @@ const AddRecordForm: FC<AddRecordFormProps> = ({ onTransactionAdded }) => {
               onBlur={(e) => handleFieldBlur('payee', e.target.value)}
               disabled={isLoading}
               required
-              aria-label="Payee"
               aria-invalid={!!fieldErrors.payee}
               aria-describedby={fieldErrors.payee ? 'payee-error' : undefined}
-              className={cx({ [styles.inputError]: fieldErrors.payee })}
+              className={cx(styles['add-record-form__input'], {
+                [styles['add-record-form__input--error']]: fieldErrors.payee,
+              })}
             />
             {fieldErrors.payee && (
               <span
                 id="payee-error"
-                className={styles.fieldError}
+                className={styles['add-record-form__field-error']}
                 role="alert"
               >
                 {fieldErrors.payee}
@@ -232,25 +224,21 @@ const AddRecordForm: FC<AddRecordFormProps> = ({ onTransactionAdded }) => {
             )}
           </div>
 
-          <div className={cx(styles.column, columnStyles.memo)}>
+          <div className={styles['add-record-form__field-group']}>
+            <label
+              htmlFor="amount-input"
+              className={styles['add-record-form__label']}
+            >
+              Amount
+              <span
+                className={styles['add-record-form__label-indicator--required']}
+              >
+                *
+              </span>
+            </label>
             <input
-              placeholder="Memo (optional)"
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
-              disabled={isLoading}
-              aria-label="Memo"
-            />
-          </div>
-
-          <div
-            className={cx(
-              styles.column,
-              styles['column--amount'],
-              columnStyles.amount,
-            )}
-          >
-            <input
-              placeholder="Amount *"
+              id="amount-input"
+              placeholder="0.00"
               type="number"
               step="0.01"
               value={amount}
@@ -263,15 +251,16 @@ const AddRecordForm: FC<AddRecordFormProps> = ({ onTransactionAdded }) => {
               onBlur={(e) => handleFieldBlur('amount', e.target.value)}
               disabled={isLoading}
               required
-              aria-label="Amount"
               aria-invalid={!!fieldErrors.amount}
               aria-describedby={fieldErrors.amount ? 'amount-error' : undefined}
-              className={cx({ [styles.inputError]: fieldErrors.amount })}
+              className={cx(styles['add-record-form__input'], {
+                [styles['add-record-form__input--error']]: fieldErrors.amount,
+              })}
             />
             {fieldErrors.amount && (
               <span
                 id="amount-error"
-                className={styles.fieldError}
+                className={styles['add-record-form__field-error']}
                 role="alert"
               >
                 {fieldErrors.amount}
@@ -279,10 +268,75 @@ const AddRecordForm: FC<AddRecordFormProps> = ({ onTransactionAdded }) => {
             )}
           </div>
 
-          <div className={styles.column}>
+          <div className={styles['add-record-form__field-group']}>
+            <label
+              htmlFor="date-input"
+              className={styles['add-record-form__label']}
+            >
+              Date
+              <span
+                className={styles['add-record-form__label-indicator--required']}
+              >
+                *
+              </span>
+            </label>
+            <input
+              id="date-input"
+              placeholder="YYYY-MM-DD HH:mm"
+              value={date}
+              onChange={(e) => {
+                setDate(e.target.value);
+                if (fieldErrors.date) {
+                  handleFieldBlur('date', e.target.value);
+                }
+              }}
+              onBlur={(e) => handleFieldBlur('date', e.target.value)}
+              disabled={isLoading}
+              required
+              aria-invalid={!!fieldErrors.date}
+              aria-describedby={fieldErrors.date ? 'date-error' : undefined}
+              className={cx(styles['add-record-form__input'], {
+                [styles['add-record-form__input--error']]: fieldErrors.date,
+              })}
+            />
+            {fieldErrors.date && (
+              <span
+                id="date-error"
+                className={styles['add-record-form__field-error']}
+                role="alert"
+              >
+                {fieldErrors.date}
+              </span>
+            )}
+          </div>
+
+          {/* Second Row */}
+          <div className={styles['add-record-form__field-group']}>
+            <label
+              htmlFor="memo-input"
+              className={styles['add-record-form__label']}
+            >
+              Memo
+              <span
+                className={styles['add-record-form__label-indicator--optional']}
+              >
+                (optional)
+              </span>
+            </label>
+            <input
+              id="memo-input"
+              placeholder="Enter memo"
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              disabled={isLoading}
+              className={styles['add-record-form__input']}
+            />
+          </div>
+
+          <div className={styles['add-record-form__button-container']}>
             <Button
-              className={styles.buttonAdd}
-              label={isLoading ? 'Adding...' : 'Add'}
+              className={styles['add-record-form__button']}
+              label={isLoading ? 'Adding...' : 'Add Transaction'}
               padding="small"
               width="auto"
               type="submit"

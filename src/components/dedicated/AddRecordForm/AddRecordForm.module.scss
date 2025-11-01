@@ -1,120 +1,174 @@
-.root {
+.add-record-form {
   @include container;
   & {
     margin-top: 3rem;
-    padding: 1.5rem 0.5rem 2rem;
-    border-top: 0.1rem solid $color-cyan;
-    background-color: $color-cyan-lightest;
+    padding: 2.5rem 2rem 3rem;
+    background-color: #e8f2fc;
+    border-radius: 0.8rem;
   }
 }
 
-.header {
+.add-record-form__header {
   @include typoHeader3;
   & {
-    margin: 0 0.5rem 1rem;
+    margin: 0 0 2.5rem;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #4a90e2;
+    letter-spacing: -0.02rem;
   }
 }
 
-.form {
+.add-record-form__form {
   display: flex;
   flex-direction: column;
+  max-width: 120rem;
 }
 
-.success {
+.add-record-form__message--success {
   @include typoContent;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   color: #2d7738;
-  margin: 0 0.5rem 1rem;
+  margin: 0 0 1.5rem;
   padding: 0.75rem 1rem;
   background-color: rgba(#2d7738, 0.1);
-  border-radius: $defaultRadius;
+  border-radius: 0.8rem;
   border: 0.1rem solid #2d7738;
   font-weight: 500;
 }
 
-.successIcon {
-  width: 20px;
-  height: 20px;
+.add-record-form__icon--success {
+  width: 2rem;
+  height: 2rem;
   flex-shrink: 0;
 }
 
-.submitError {
-  margin: 0 0.5rem 1rem;
+.add-record-form__error-container {
+  margin: 0 0 1.5rem;
 }
 
-.error {
+.add-record-form__message--error {
   @include typoContent;
   & {
     color: $color-red;
-    margin: 0 0.5rem 1rem;
-    padding: 0.5rem;
+    margin: 0;
+    padding: 0.75rem 1rem;
     background-color: rgba($color-red, 0.1);
-    border-radius: $defaultRadius;
+    border-radius: 0.8rem;
     border: 0.1rem solid $color-red;
   }
 }
 
-.fields {
+.add-record-form__fields {
   width: 100%;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: 2rem;
 
   @media #{$screen-small-up} {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: 2rem 2rem;
   }
 }
 
-.buttonAdd {
-  width: 100%;
-
-  @media #{$screen-small-up} {
-    width: 100%;
-  }
+.add-record-form__field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
-.column {
+.add-record-form__label {
   @include typoContent;
-  & {
-    padding: 0 0.5rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: $color-gray-darkest;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.add-record-form__label-indicator--required {
+  color: $color-red;
+  font-weight: 700;
+}
+
+.add-record-form__label-indicator--optional {
+  color: $color-gray;
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+.add-record-form__input {
+  width: 100%;
+  @include typoContent;
+  padding: 1rem 1.2rem;
+  border-radius: 0.8rem;
+  border: 0.2rem solid $color-gray-lighter;
+  color: $color-black;
+  background: $color-white;
+  transition: all 0.2s ease;
+  font-size: 1.4rem;
+
+  &::placeholder {
+    color: $color-gray;
   }
 
-  input {
-    width: 100%;
-    @include typoContent;
-    padding: 0.5rem;
-    border-radius: $defaultRadius;
-    border: 0.1rem solid $color-cyan;
-    color: $color-black;
-    transition: border-color 0.2s;
+  &:hover:not(:disabled) {
+    border-color: $color-gray-light;
+  }
 
-    &:focus {
-      outline: 2px solid $color-cyan-darker;
-      outline-offset: 2px;
-    }
+  &:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 0.3rem rgba(74, 144, 226, 0.1);
+  }
 
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    &.inputError {
-      border-color: $color-red;
-      
-      &:focus {
-        outline-color: $color-red;
-      }
-    }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: $color-gray-lightest;
   }
 }
 
-.fieldError {
+.add-record-form__input--error {
+  border-color: $color-red;
+
+  &:focus {
+    border-color: $color-red;
+    box-shadow: 0 0 0 0.3rem rgba($color-red, 0.1);
+  }
+}
+
+.add-record-form__field-error {
   display: block;
-  margin-top: 0.25rem;
-  font-size: 0.8125rem;
+  margin-top: 0.4rem;
+  font-size: 1.2rem;
   color: $color-red;
   font-weight: 500;
+}
+
+.add-record-form__button-container {
+  display: flex;
+  align-items: flex-end;
+
+  @media #{$screen-small-up} {
+    grid-column: 1 / 3;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+}
+
+.add-record-form__button {
+  width: 100%;
+  height: 4.6rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+
+  @media #{$screen-small-up} {
+    width: auto;
+    min-width: 25rem;
+  }
 }
