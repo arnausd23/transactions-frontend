@@ -3,7 +3,6 @@ import cx from 'classnames';
 
 import Currency from 'components/core/Currency/Currency';
 import { formatDate } from 'utils/date';
-import { isNegativeTransaction } from '../../../types/transaction';
 
 import { RecordRowProps } from './types';
 import styles from './RecordRow.module.scss';
@@ -36,7 +35,7 @@ const RecordRow: FC<RecordRowProps> = ({
         <Currency
           amount={transactionRecord.amount}
           className={cx(styles.currency, {
-            [currencyStyles.negative]: isNegativeTransaction(transactionRecord),
+            [currencyStyles.negative]: transactionRecord.amount < 0,
           })}
         />
       </div>

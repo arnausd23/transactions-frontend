@@ -2,7 +2,7 @@ import { Transaction, CreateTransactionPayload } from '../types/transaction';
 import { FetchAPIOptions } from '../types/api';
 import { convertMainUnitToSubunit } from '../utils/currency';
 import { normalizeError, getUserFriendlyMessage } from '../utils/errorHandling';
-import { createAPIError, createNetworkError, ErrorType } from '../types/errors';
+import { createAPIError, createNetworkError } from '../types/errors';
 
 const DEFAULT_URL = '/api/transactions';
 
@@ -26,7 +26,7 @@ async function fetchAPI<T = any>(options: FetchAPIOptions = {}): Promise<T> {
 
     if (!response.ok) {
       let errorMessage = 'Failed to fetch data';
-      
+
       try {
         const errorData = await response.json().catch(() => ({}));
         errorMessage = errorData.message || errorMessage;
@@ -35,11 +35,7 @@ async function fetchAPI<T = any>(options: FetchAPIOptions = {}): Promise<T> {
         errorMessage = response.statusText || errorMessage;
       }
 
-      throw createAPIError(
-        errorMessage,
-        response.status,
-        response.statusText,
-      );
+      throw createAPIError(errorMessage, response.status, response.statusText);
     }
 
     return response.json();
@@ -59,7 +55,10 @@ async function fetchAPI<T = any>(options: FetchAPIOptions = {}): Promise<T> {
 
     // Handle other errors
     const message = getUserFriendlyMessage(error);
-    throw createNetworkError(message, error instanceof Error ? error : undefined);
+    throw createNetworkError(
+      message,
+      error instanceof Error ? error : undefined,
+    );
   }
 }
 
@@ -102,7 +101,9 @@ export const transactionService = {
     try {
       // Validate and parse amount
       const parsedAmount =
-        typeof input.amount === 'string' ? parseFloat(input.amount) : input.amount;
+        typeof input.amount === 'string'
+          ? parseFloat(input.amount)
+          : input.amount;
 
       if (isNaN(parsedAmount)) {
         throw createAPIError('Amount must be a valid number', 400);
@@ -155,4 +156,3 @@ export const transactionService = {
     }
   },
 };
-

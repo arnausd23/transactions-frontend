@@ -8,7 +8,6 @@ export const createPagination = (
   itemsPerPage: number,
   totalItems: number,
 ): Pagination => {
-  // Validate inputs
   if (itemsPerPage <= 0) {
     throw new Error('Items per page must be greater than 0');
   }
@@ -19,7 +18,8 @@ export const createPagination = (
     throw new Error('Total items cannot be negative');
   }
 
-  const totalPages = totalItems === 0 ? 1 : Math.ceil(totalItems / itemsPerPage);
+  const totalPages =
+    totalItems === 0 ? 1 : Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
@@ -49,7 +49,10 @@ export const paginateItems = <T>(
   itemsPerPage: number = 10,
 ): PaginatedResult<T> => {
   const pagination = createPagination(currentPage, itemsPerPage, items.length);
-  const paginatedItems = items.slice(pagination.startIndex, pagination.endIndex);
+  const paginatedItems = items.slice(
+    pagination.startIndex,
+    pagination.endIndex,
+  );
 
   return {
     items: paginatedItems,
@@ -80,4 +83,3 @@ export const findItemPage = <T>(
 
   return Math.floor(index / itemsPerPage) + 1;
 };
-
