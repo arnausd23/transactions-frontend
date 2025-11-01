@@ -5,7 +5,7 @@
   position: relative;
 }
 
-.refreshing-row {
+.refreshingRow {
   position: absolute;
   top: 10rem;
   right: 0;
@@ -19,6 +19,12 @@
   animation: shimmer 2s ease-in-out infinite;
   border-bottom: 0.1rem solid rgba($color-cyan-light, 0.3);
   min-height: 5rem;
+}
+
+.refreshingMessage {
+  margin: 0;
+  color: $color-cyan-darker;
+  font-size: 0.875rem;
 }
 
 @keyframes shimmer {
@@ -60,22 +66,45 @@
   justify-content: center;
   padding: 3rem 1rem;
   text-align: center;
+}
 
-  p {
-    margin-top: 1rem;
-    color: $color-black;
-  }
+.loadingMessage {
+  margin: 1rem 0 0;
+  color: $color-black;
+  font-size: 1rem;
+}
 
-  &--error {
-    .errorMessage {
-      color: $color-red;
-      font-weight: 500;
-    }
-  }
+.errorContainer {
+  padding: 2rem 1rem;
+  width: 100%;
+}
 
-  &--empty {
-    p {
-      color: $color-gray;
-    }
-  }
+.emptyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  text-align: center;
+}
+
+.emptyIcon {
+  width: 64px;
+  height: 64px;
+  color: $color-gray;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.emptyMessage {
+  margin: 0 0 0.5rem;
+  color: $color-black;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.emptySubmessage {
+  margin: 0;
+  color: $color-gray;
+  font-size: 0.9375rem;
 }

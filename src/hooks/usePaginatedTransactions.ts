@@ -1,16 +1,9 @@
-/**
- * Application Layer - Custom Hook
- * Combines transaction fetching with pagination logic
- */
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { useTransactions } from './useTransactions';
-import {
-  paginateTransactions,
-  findTransactionPage,
-} from '../useCases/paginateTransactions';
-import { Transaction } from '../../domain/entities/Transaction';
-import { Pagination } from '../../domain/valueObjects/Pagination';
-import { sortByDate } from 'utils/sortTransactions';
+import { Transaction } from '../types/transaction';
+import { Pagination } from '../types/pagination';
+import { paginateItems, findItemPage } from '../utils/pagination';
+import { sortByDate } from '../utils/sortTransactions';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -40,11 +33,17 @@ export const usePaginatedTransactions = (): UsePaginatedTransactionsResult => {
   // Paginate the sorted transactions
   const paginatedResult = useMemo(() => {
     if (!sortedTransactions) return null;
-    return paginateTransactions(
-      sortedTransactions,
-      currentPage,
-      ITEMS_PER_PAGE,
-    );
+    return paginateItems(sortedTransactions, currentPage, ITEMS_PER_PAGE);
+  }, [sortedTransactions, currentPage]);
+
+  // Reset to page 1 when transactions change (e.g., after refetch)
+  useEffect(() => {
+    if (sortedTransactions && currentPage > 1) {
+      const maxPage = Math.ceil(sortedTransactions.length / ITEMS_PER_PAGE) || 1;
+      if (currentPage > maxPage) {
+        setCurrentPage(1);
+      }
+    }
   }, [sortedTransactions, currentPage]);
 
   // Navigate to a specific page
@@ -78,16 +77,10 @@ export const usePaginatedTransactions = (): UsePaginatedTransactionsResult => {
   const goToTransactionPage = useCallback(
     (transactionId: string) => {
       if (!sortedTransactions) {
-        console.log('No sorted transactions available');
         return;
       }
 
-      const page = findTransactionPage(
-        sortedTransactions,
-        transactionId,
-        ITEMS_PER_PAGE,
-      );
-
+      const page = findItemPage(sortedTransactions, transactionId, ITEMS_PER_PAGE);
       setCurrentPage(page);
     },
     [sortedTransactions],
@@ -107,3 +100,4 @@ export const usePaginatedTransactions = (): UsePaginatedTransactionsResult => {
     goToTransactionPage,
   };
 };
+

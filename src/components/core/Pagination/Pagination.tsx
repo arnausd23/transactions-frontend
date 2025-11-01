@@ -12,9 +12,9 @@ export const Pagination: FC<PaginationProps> = ({
   onNextPage,
   onPreviousPage,
 }) => {
-  const currentPage = pagination.getCurrentPage();
+  const currentPage = pagination.currentPage;
   const totalPages = pagination.totalPages;
-  const totalItems = pagination.getTotalItems();
+  const totalItems = pagination.totalItems;
 
   if (totalItems === 0) {
     return null;
@@ -30,7 +30,7 @@ export const Pagination: FC<PaginationProps> = ({
       <div className={styles.controls}>
         <Button
           onClick={onPreviousPage}
-          disabled={!pagination.hasPreviousPage}
+          isDisabled={!pagination.hasPreviousPage}
           variant="secondary"
         >
           Previous
@@ -42,7 +42,7 @@ export const Pagination: FC<PaginationProps> = ({
 
         <Button
           onClick={onNextPage}
-          disabled={!pagination.hasNextPage}
+          isDisabled={!pagination.hasNextPage}
           variant="secondary"
         >
           Next

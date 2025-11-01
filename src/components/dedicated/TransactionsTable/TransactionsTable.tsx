@@ -4,25 +4,18 @@ import cx from 'classnames';
 import RecordRow from 'components/dedicated/RecordRow/RecordRow';
 import Spinner from 'components/core/Spinner/Spinner';
 import Pagination from 'components/core/Pagination/Pagination';
+import ErrorMessage from 'components/core/ErrorMessage/ErrorMessage';
 
 import styles from './TransactionsTable.module.scss';
 import spinnerStyles from 'components/core/Spinner/Spinner.module.scss';
-import { usePaginatedTransactions } from 'application/hooks/usePaginatedTransactions';
+import { usePaginatedTransactions } from 'hooks/usePaginatedTransactions';
+import { useTransactions } from 'hooks/useTransactions';
 
 export const columnStyles = {
   amount: styles['column--amount'],
   payee: styles['column--payee'],
   date: styles['column--date'],
   memo: styles['column--memo'],
-};
-
-const containerStyles = {
-  error: styles['container--error'],
-  empty: styles['container--empty'],
-};
-
-const refreshingRowStyles = {
-  refreshingRow: styles['refreshing-row'],
 };
 
 interface TransactionsTableProps {
@@ -46,6 +39,8 @@ const TransactionsTable: FC<TransactionsTableProps> = ({
     goToTransactionPage,
   } = usePaginatedTransactions();
 
+  const { refetch } = useTransactions();
+
   const [highlightedTransactionId, setHighlightedTransactionId] = useState<
     string | null
   >(null);
@@ -64,11 +59,15 @@ const TransactionsTable: FC<TransactionsTableProps> = ({
 
       const timeout = setTimeout(() => {
         setHighlightedTransactionId(null);
-      }, 1000);
+      }, 3000);
 
       return () => clearTimeout(timeout);
     }
   }, [externalNewTransactionId]);
+
+  const handleRetry = () => {
+    refetch();
+  };
 
   return (
     <div className={styles.root}>
@@ -83,29 +82,31 @@ const TransactionsTable: FC<TransactionsTableProps> = ({
       {isLoading && (
         <div className={styles.container}>
           <Spinner size={3} />
-          <p>Loading transactions...</p>
+          <p className={styles.loadingMessage}>Loading transactions...</p>
         </div>
       )}
 
-      {/* Show refresh indicator as a loading row when fetching but not initial load */}
+      {/* Show refresh indicator when fetching but not initial load */}
       {isFetching && !isLoading && (
-        <div className={refreshingRowStyles.refreshingRow}>
-          <Spinner size={3} className={spinnerStyles['spinner--cyan']} />
-          <p>Refreshing transactions...</p>
+        <div className={styles.refreshingRow}>
+          <Spinner size={2} className={spinnerStyles['spinner--cyan']} />
+          <p className={styles.refreshingMessage}>Refreshing transactions...</p>
         </div>
       )}
 
       {/* Error state */}
-      {isError && (
-        <div className={cx(styles.container, containerStyles.error)}>
-          <p className={styles.errorMessage}>
-            {error?.message || 'Unable to fetch data. Please try again later.'}
-          </p>
+      {isError && !isLoading && (
+        <div className={styles.errorContainer}>
+          <ErrorMessage
+            error={error}
+            onRetry={handleRetry}
+            showRetry={true}
+          />
         </div>
       )}
 
       {/* Success state - render transactions */}
-      {transactions && transactions.length > 0 && (
+      {!isLoading && !isError && transactions && transactions.length > 0 && (
         <>
           {transactions.map((transaction) => (
             <RecordRow
@@ -119,21 +120,43 @@ const TransactionsTable: FC<TransactionsTableProps> = ({
       )}
 
       {/* Empty state */}
-      {transactions && transactions.length === 0 && (
-        <div className={cx(styles.container, containerStyles.empty)}>
-          <p>No transactions found.</p>
+      {!isLoading && !isError && transactions && transactions.length === 0 && (
+        <div className={styles.emptyContainer}>
+          <svg
+            className={styles.emptyIcon}
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <p className={styles.emptyMessage}>No transactions found</p>
+          <p className={styles.emptySubmessage}>
+            Add your first transaction using the form below
+          </p>
         </div>
       )}
 
       {/* Pagination controls */}
-      {pagination && transactions && transactions.length > 0 && (
-        <Pagination
-          pagination={pagination}
-          onNextPage={goToNextPage}
-          onPreviousPage={goToPreviousPage}
-          onGoToPage={() => {}}
-        />
-      )}
+      {!isLoading &&
+        !isError &&
+        pagination &&
+        transactions &&
+        transactions.length > 0 && (
+          <Pagination
+            pagination={pagination}
+            onNextPage={goToNextPage}
+            onPreviousPage={goToPreviousPage}
+            onGoToPage={() => {}}
+          />
+        )}
     </div>
   );
 };

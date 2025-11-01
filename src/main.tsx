@@ -4,6 +4,7 @@ import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import store from 'store/store';
+import ErrorBoundary from 'components/core/ErrorBoundary/ErrorBoundary';
 
 import makeServer from './server';
 import './index.scss';
@@ -22,10 +23,12 @@ const queryClient = new QueryClient({
 });
 
 render(
-  <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <DashboardLayout />
-    </QueryClientProvider>
-  </Provider>,
+  <ErrorBoundary>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <DashboardLayout />
+      </QueryClientProvider>
+    </Provider>
+  </ErrorBoundary>,
   document.getElementById('root'),
 );

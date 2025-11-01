@@ -1,4 +1,5 @@
-import { Transaction } from 'domain/entities/Transaction';
+import { Transaction } from '../types/transaction';
+
 /**
  * Sorts transactions by date
  * @param transactions - Array of transaction records

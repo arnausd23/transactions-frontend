@@ -1,15 +1,14 @@
-/**
- * Application Layer - Custom Hook
- * React Query mutation hook for adding transactions
- */
-
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  addTransaction,
-  AddTransactionInput,
-} from '../useCases/addTransaction';
-import { Transaction } from 'domain/entities/Transaction';
+import { Transaction } from '../types/transaction';
+import { transactionService } from '../services/transactionService';
 import { TRANSACTIONS_QUERY_KEY } from './types';
+
+export interface AddTransactionInput {
+  amount: string | number;
+  payee: string;
+  timestamp: string | number;
+  memo?: string;
+}
 
 export interface UseAddTransactionResult {
   mutate: (input: AddTransactionInput) => void;
@@ -27,15 +26,14 @@ export interface UseAddTransactionResult {
  * Provides mutation function and state for adding transactions.
  * Automatically invalidates and refetches the transactions list on success.
  * Returns the newly created transaction with its ID.
- *
- * @returns Mutation object with mutate, mutateAsync, isLoading, isError, data (containing new transaction), etc.
- *
  */
 export const useAddTransaction = (): UseAddTransactionResult => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<Transaction, Error, AddTransactionInput>({
-    mutationFn: addTransaction,
+    mutationFn: async (input) => {
+      return transactionService.createTransaction(input);
+    },
     onSuccess: async () => {
       await queryClient.refetchQueries({ queryKey: [TRANSACTIONS_QUERY_KEY] });
     },
@@ -51,3 +49,4 @@ export const useAddTransaction = (): UseAddTransactionResult => {
     reset: mutation.reset,
   };
 };
+

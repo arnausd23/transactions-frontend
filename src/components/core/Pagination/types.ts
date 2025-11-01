@@ -1,7 +1,7 @@
-import { Pagination as PaginationVO } from '../../../domain/valueObjects/Pagination';
+import { Pagination } from '../../../types/pagination';
 
 export interface PaginationProps {
-  pagination: PaginationVO;
+  pagination: Pagination;
   onNextPage: () => void;
   onPreviousPage: () => void;
   onGoToPage: (page: number) => void;

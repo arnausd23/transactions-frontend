@@ -20,6 +20,30 @@
   flex-direction: column;
 }
 
+.success {
+  @include typoContent;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #2d7738;
+  margin: 0 0.5rem 1rem;
+  padding: 0.75rem 1rem;
+  background-color: rgba(#2d7738, 0.1);
+  border-radius: $defaultRadius;
+  border: 0.1rem solid #2d7738;
+  font-weight: 500;
+}
+
+.successIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.submitError {
+  margin: 0 0.5rem 1rem;
+}
+
 .error {
   @include typoContent;
   & {
@@ -65,13 +89,32 @@
     border-radius: $defaultRadius;
     border: 0.1rem solid $color-cyan;
     color: $color-black;
+    transition: border-color 0.2s;
 
     &:focus {
-      outline: $color-cyan-darker;
+      outline: 2px solid $color-cyan-darker;
+      outline-offset: 2px;
     }
 
-    &.hasError {
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    &.inputError {
       border-color: $color-red;
+      
+      &:focus {
+        outline-color: $color-red;
+      }
     }
   }
+}
+
+.fieldError {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  color: $color-red;
+  font-weight: 500;
 }
